@@ -14,6 +14,11 @@
 #include <cmath>
 using namespace std;
 
+struct Point {
+    long long lat; // latitude of the point
+    long long lon; // longitude of the point
+};
+
 long long manhattan(const Point& pt1, const Point& pt2) {
     long long dist = 0;
     long long x = abs(pt1.lat - pt2.lat);
