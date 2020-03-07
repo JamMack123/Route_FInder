@@ -28,12 +28,11 @@ long long manhattan(const Point& pt1, const Point& pt2) {
 }
 void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& points) {
 	// Initializing of variables
-	WDigraph* newGraph = new WDigraph;
+	
 	string line;
 	fstream file;
 	file.open(filename);
 
-	unordered_map<int,Point> storedVals;
 	Point pt1;
 
 	// Reading the file line by line until there are no lines left
@@ -71,9 +70,9 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 			pt1.lat = newLat;
 			pt1.lon = newLon;
 
-			storedVals[vertex] = pt1;
+			points[vertex] = pt1;
 
-			newGraph->addVertex(vertex);
+			graph->addVertex(vertex);
 			i++;
 			
 
@@ -88,10 +87,10 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 			int vertex1 = stoi(str3);
 			int vertex2 = stoi(str4);
 
-			long long cost = manhattan(storedVals[vertex1], storedVals[vertex2]);
+			long long cost = manhattan(points[vertex1], points[vertex2]);
 
-			newGraph->addEdge(vertex1, vertex2, cost);
-			newGraph->addEdge(vertex2, vertex1, cost);
+			graph->addEdge(vertex1, vertex2, cost);
+			graph->addEdge(vertex2, vertex1, cost);
 		}
 	}
 	file.close();
