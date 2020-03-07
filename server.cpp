@@ -26,7 +26,7 @@ long long manhattan(const Point& pt1, const Point& pt2) {
     dist = x+y;
     return dist;
 }
-void readGraph(string filename, WDigraph& graph, unordered_map<int>, Point& points) {
+void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& points) {
 	// Initializing of variables
 	WDigraph* newGraph = new WDigraph;
 	string line;
