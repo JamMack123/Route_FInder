@@ -7,12 +7,15 @@
 
 #include "digraph.cpp"
 #include "wdigraph.h"
+#include "dijkstra.h"
 #include <iostream>
 #include <fstream>
 #include <queue>
 #include <unordered_map>
 #include <string>
 #include <cmath>
+#include <list>
+#include <utility>
 using namespace std;
 
 struct Point {
@@ -30,8 +33,8 @@ long long manhattan(const Point& pt1, const Point& pt2) {
 }
 //Taking the latitude and longitude finds the nearest vertex
 int findVertex(long long lat, long long lon, unordered_map<int, Point>& vertice){
-    long long oldLon = 10000;
-    long long oldLat = 10000;
+    long long oldLon = 1000000000;
+    long long oldLat = 1000000000;
     int vertex = -1;
     for(auto i = vertice.begin(); i != vertice.end(); i++){
         int key = i->first;
@@ -129,7 +132,56 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
     
 }
 
-void server(char inputFile[], char outputFile[], unordered_map<int, Point>& nodes){
+void dijkstra(const WDigraph& graph, int startVertex, 
+    unordered_map<int, PIL>& searchTree) {
+
+    // All active fires stored as follows:
+    // say an entry is (v, (u, d)), then there is a fire that started at u
+    // and will burn the u->v edge, reaching v at time d
+    list<PIPIL> fires;
+
+    // at time 0, the startVertex burns, we use -1 to indicate there is
+    // no "predecessor" of the startVertex
+
+    fires.push_back(PIPIL(startVertex, PIL(-1, 0)));
+
+    // while there is an active fire
+    while (!fires.empty()) {
+        // find the fire that reaches its endpoint "v" earliest,
+        // represented as an iterator into the list
+        auto earliestFire = fires.begin();
+        for (auto iter = fires.begin(); iter != fires.end(); ++iter) {
+            if (iter->second.second < earliestFire->second.second) {
+                earliestFire = iter;
+            }
+        }
+
+        // to reduce notation in the code below, this u,v,d agrees with
+        // the intuition presented in the comment when PIPIL is typedef'ed
+        int v = earliestFire->first, u = earliestFire->second.first, d = earliestFire->second.second;
+        // remove this fire
+        fires.erase(earliestFire);
+
+        // if u is already "burned", there nothing to do
+        if (searchTree.find(v) != searchTree.end()) {
+            continue;
+        }
+        // declare that v is "burned" at time d with a fire that spawned from u
+        searchTree[v] = PIL(u, d);
+        // now start fires from all edges exiting vertex v
+        for (auto iter = graph.neighbours(v); iter != graph.endIterator(v); iter++) {
+            int nbr = *iter;
+
+            // the fire starts at v at time d and will reach nbr
+            // at time d + (length of v->nbr edge)
+            int burn = d + graph.getCost(v, nbr);
+            fires.push_back(PIPIL(nbr, PIL(v, burn)));
+        }
+    }
+}
+
+void server(char inputFile[], char outputFile[], unordered_map<int, Point>& nodes, WDigraph graph){
+    unordered_map<int, PIL> searchTree;
     string inFile = inputFile;
     string outFile = outputFile;
     ifstream input;
@@ -151,12 +203,39 @@ void server(char inputFile[], char outputFile[], unordered_map<int, Point>& node
             long long lat2 = stoi(dataLine.substr(space3+1, space4-space3));
             int end = dataLine.find("\n", space4+1);
             long long lon2 = stoi(dataLine.substr(space4+1, end-space4));
-            int vertex1 = findVertex(lat1, lon1, nodes);
-            int vertex2 = findVertex(lat2, lon2, nodes);
+            int startVertex = findVertex(lat1, lon1, nodes);
+            dijkstra(graph, startVertex,searchTree);
+
+            int endVertex = findVertex(lat2, lon2, nodes);
+
+
+            list<int> path;
+            if (searchTree.find(endVertex) == searchTree.end()) {
+              cout << "Vertex " << endVertex << " not reachable from " << startVertex << endl;
+            }
+            else {
+              int stepping = endVertex;
+              while (stepping != startVertex) {
+                path.push_front(stepping);
+
+                // crawl up the search tree one step
+                stepping = searchTree[stepping].first;
+              }
+              path.push_front(startVertex);
+
+              cout << "Cost of cheapest path from " << startVertex << " to "
+                   << endVertex << " is: " << searchTree[endVertex].second << endl;
+              cout << "Path:";
+              for (auto it : path) {
+                cout << ' ' << it;
+              }
+              cout << endl;
+            }
             break;
         }
     }
 }
+
 
 
 int main(int argc, char *argv[])
@@ -166,6 +245,8 @@ int main(int argc, char *argv[])
     char *inputFile = argv[1];
     char *outputFile = argv[2];
     readGraph("edmonton-roads-2.0.1.txt", graph, test);
+    server(inputFile, outputFile, test, graph);
+
 
     return 0;
 }
