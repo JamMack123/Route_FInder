@@ -54,11 +54,14 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 	fstream file;
 	file.open(filename);
 
+
 	Point pt1;
+	
 
 	// Reading the file line by line until there are no lines left
 	int i = 0;
 	while(getline(file, line)){
+		
 		string str2 = line.substr(0,1);
 
 		// If the first char in the line is V then a vertex will be added
@@ -71,29 +74,32 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 
 			start = end;
 			end = line.find(',', start+1);
-
-			string lon = line.substr(start+1, end-start-1);
+			cout<<end<<endl;
+			cout<<"_____"<<endl;
+			string lon = line.substr(start+1, end-start);
 
 			start = end;
 
 			end = line.find('\n', start +1);
+			cout<<end<<endl;
+			cout<<"_____"<<endl;
+			string lat = line.substr(start+1, end-start);
+			
 
-			string lat = line.substr(start+1, end-start-1);
-
-
-			int vertex = stoi(str3);
+			int vertex = stoi(subS);
 			double latDoub = stod(lat);
 			double lonDoub = stod(lon);
+			cout<<vertex<<endl;
 
 			long long newLon = static_cast<long long>(lonDoub*100000);
 			long long newLat = static_cast<long long>(latDoub*100000);
 
 			pt1.lat = newLat;
 			pt1.lon = newLon;
-
+			cout<<pt1.lat<< " " <<pt1.lon<<endl;
 			points[vertex] = pt1;
-
-			graph->addVertex(vertex);
+			cout<<"here11"<<endl;
+			graph.addVertex(vertex);
 			i++;
 			
 
@@ -110,8 +116,8 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 
 			long long cost = manhattan(points[vertex1], points[vertex2]);
 
-			graph->addEdge(vertex1, vertex2, cost);
-			graph->addEdge(vertex2, vertex1, cost);
+			graph.addEdge(vertex1, vertex2, cost);
+			//graph.addEdge(vertex2, vertex1, cost);
 		}
 	}
 	file.close();
