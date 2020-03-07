@@ -97,6 +97,34 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 	
 }
 
+void server(char inputFile[], char outputFile[]){
+    string inFile = inputFile;
+    string outFile = outputFile;
+    ifstream input;
+    ifstream output;
+    input.open(inFile, ifstream::in);
+    output.open(outFile, ifstream::out);
+    while(true){
+        char line[200];
+        string dataLine;
+        input.getline(line, 200);
+        dataLine = line;
+        if(dataLine[0] == 'R'){
+            int space1 = dataLine.find(" ");
+            int space2 = dataLine.find(" ", space1 + 1);
+            long long lat1 = stoi(dataLine.substr(space1 + 1, space2-space1));
+            int space3 = dataLine.find(" ", space2+1);
+            long long lon1 = stoi(dataLine.substr(space2+2, space3-space1));
+            int space4 = dataLine.find(" ", space3+1);
+            long long lat2 = stoi(dataLine.substr(space3+1, space4-space3));
+            int end = dataLine.find("\n", space4+1);
+            long long lon2 = stoi(dataLine.substr(space4+1, end-space4));
+            cout << lat1 << " " << lon1 << " " << lat2 <<" " << lon2 << endl;
+            break;
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
     char *file = argv[1];
