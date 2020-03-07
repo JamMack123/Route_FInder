@@ -11,8 +11,16 @@
 #include <queue>
 #include <unordered_map>
 #include <string>
+#include <cmath>
 using namespace std;
 
+long long manhattan(const Point& pt1, const Point& pt2) {
+    long long dist = 0;
+    long long x = abs(pt1.lat - pt2.lat);
+    long long y = abs(pt1.lon - pt2.lon);
+    dist = x+y;
+    return dist;
+}
 
 
 int main(int argc, char *argv[])
