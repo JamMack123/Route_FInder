@@ -26,6 +26,27 @@ long long manhattan(const Point& pt1, const Point& pt2) {
     dist = x+y;
     return dist;
 }
+
+//Taking the latitude and longitude finds the nearest vertex
+int findVertex(long long lat, long long lon, unordered_map<int, Point>& vertice){
+    long long oldLon = 10000;
+    long long oldLat = 10000;
+    int vertex = -1;
+    for(auto i = vertice.begin(); i != vertice.end(); i++){
+        int key = i->first;
+        Point p = vertice[key];
+        int x = abs(p.lat - lat);
+        int y = abs(p.lon - lon);
+        if(x < oldLat && y < oldLon){
+            oldLat = x;
+            oldLon = y;
+            vertex = key;
+        }
+
+    }
+    return vertex;
+}
+
 void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& points) {
 	// Initializing of variables
 	
