@@ -59,7 +59,7 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 	
 
 	// Reading the file line by line until there are no lines left
-	int i = 0;
+	
 	while(getline(file, line)){
 		
 		string str2 = line.substr(0,1);
@@ -74,33 +74,35 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 
 			start = end;
 			end = line.find(',', start+1);
-			cout<<end<<endl;
-			cout<<"_____"<<endl;
-			string lon = line.substr(start+1, end-start);
+			//cout<<end<<endl;
+			//cout<<"_____"<<endl;
+			string lat = line.substr(start+1, end-start-1);
+			//cout<<"lat "<< lat<<endl;
 
 			start = end;
 
-			end = line.find('\n', start +1);
-			cout<<end<<endl;
-			cout<<"_____"<<endl;
-			string lat = line.substr(start+1, end-start);
-			
+			//end = line.find('\n', start +1);
+			//cout<<end<<endl;
+			//cout<<"_____"<<endl;
+			string lon = line.substr(start+1, line.length()-1);
+			//cout<<"lon "<<lon<<endl;
 
 			int vertex = stoi(subS);
 			double latDoub = stod(lat);
 			double lonDoub = stod(lon);
-			cout<<vertex<<endl;
+			//cout<<vertex<<endl;
 
 			long long newLon = static_cast<long long>(lonDoub*100000);
 			long long newLat = static_cast<long long>(latDoub*100000);
 
 			pt1.lat = newLat;
 			pt1.lon = newLon;
-			cout<<pt1.lat<< " " <<pt1.lon<<endl;
+			//cout<<pt1.lat<< " " <<pt1.lon<<endl;
 			points[vertex] = pt1;
-			cout<<"here11"<<endl;
+			//cout<<"here11"<<endl;
 			graph.addVertex(vertex);
-			i++;
+			//break;
+			
 			
 
 		// Else if the first char in the line is E then an edge will be added
@@ -110,14 +112,16 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 
 			string str3 = line.substr(2,startingPos1);
 			string str4 = line.substr(line.find(",", 2) + 1,startingPos2);
-
+			//cout<<str3<<" "<<str4<<endl;
 			int vertex1 = stoi(str3);
+
 			int vertex2 = stoi(str4);
 
 			long long cost = manhattan(points[vertex1], points[vertex2]);
 
 			graph.addEdge(vertex1, vertex2, cost);
 			//graph.addEdge(vertex2, vertex1, cost);
+			
 		}
 	}
 	file.close();
