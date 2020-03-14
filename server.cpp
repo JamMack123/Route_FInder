@@ -4,11 +4,9 @@
 //
 // Assignment #2 Route finder Part #1
 // --------------------------------------------------------------------------------
-
-#include "digraph.cpp"
+#include "digraph.h"
 #include "wdigraph.h"
 #include "dijkstra.h"
-#include "heap.h"
 #include <time.h>
 #include <iostream>
 #include <fstream>
@@ -140,28 +138,6 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
     
 }
 
-void dijkstra(const WDigraph& graph, int startVertex, unordered_map<int, PIL>& searchTree) {
-
-    BinaryHeap<PIL, long long> events;
-    events.insert(PIL(startVertex,startVertex), 0);
-    while(events.size() > 0){
-        HeapItem<PIL, long long> node = events.min();
-        events.popMin();
-        int v = node.item.second;
-        if(searchTree.find(v) == searchTree.end()){
-            searchTree[node.item.second] = node.item;
-            for (auto iter = graph.neighbours(v); iter != graph.endIterator(v); iter++) {
-                int w = *iter;
-                PIL next = PIL(v,w);
-                int cost = manhattan(points[v], points[w]);
-                events.insert(next,cost);
-            }
-        }
-
-    }
-}
-
-
 void server(char inputFile[], char outputFile[], WDigraph graph){
     unordered_map<int, PIL> searchTree;
     string inFile = inputFile;
@@ -188,19 +164,23 @@ void server(char inputFile[], char outputFile[], WDigraph graph){
             long long startVertex = findVertex(lat1, lon1);
             dijkstra(graph, startVertex,searchTree);
             long long endVertex = findVertex(lat2, lon2);
-
-            list<int> path;
+            list<long long> path;
             if (searchTree.find(endVertex) == searchTree.end()) {
               cout << "Vertex " << endVertex << " not reachable from " << startVertex << endl;
             }
             else {
-              int stepping = endVertex;
+              long long stepping = endVertex;
               while (stepping != startVertex) {
                 path.push_front(stepping);
                 stepping = searchTree[stepping].first;
+                if(stepping == startVertex){
+                    cout << "HEYEYEYEYEY" << endl;
+                }
+                cout << "." << endl;
               }
               path.push_front(startVertex);
               cout << path.size() << endl;
+              cout << searchTree.size() << endl;
             } 
             //ADJUST THIS AREA FOR SERIAL COMMUNICATON FOR
             //PART 2
