@@ -193,6 +193,8 @@ void server(char inputFile[], char outputFile[], WDigraph graph)
             input.close();
             output.close();
             break;
+        }else{
+            break;
         }
     }
 }
