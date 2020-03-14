@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------------
+Names: Paige Lekach & Justin Mackenzie
+CMPUT 275, Winter 2020
+
+Assignment #2 Route finder Part #2
+--------------------------------------------------------------------------------
+
+
+Included Files:
+
+	- server.cpp
+	- dijkstra.cpp
+	- dijkstra.h
+	- heap.h
+	- MakeFile
+	- README
+
+Running instructions:
+
+	- Type make server into the terminal to compile the files
+	- If successful type ./server <INPUT FILE> <OUTPUT FILE> to run code where INPUT FILE/OUTPUT are the desired files with the desired data
+	  (for our testing purposes we used test00-input.txt and mysol.txt)
+
+Wiring instructions
+
+	- NONE
+
+Notes and Assumptions
+	
+	- The readGraph function was altered from our Weekly Exercise #5, but now we are processing the lat and lon data but still not the names
+	- The dijkstras function developped was based off of pseudocode from eclass slides
+	- The point struct was taken from the template code given on eclass
+	
