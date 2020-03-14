@@ -1,15 +1,21 @@
 CC=g++
-OBJS=server.o
+OBJS=server.o dijkstra.o digraph.o
 CFLAGS=-c -O2 
 LFLAGS=-static
 PROGRAM=server
 
 
 server: $(OBJS)
-	$(CC) server.o -o $(PROGRAM) $(LFLAGS)
+	$(CC) $(OBJS) -o $(PROGRAM) $(LFLAGS)
 
-$(OBJS): server.cpp
-	$(CC) server.cpp -o $(OBJS) $(CFLAGS)
+server.o: server.cpp
+	$(CC) server.cpp -o server.o $(CFLAGS)
+
+dijkstra.o: dijkstra.cpp
+	$(CC) dijkstra.cpp -o dijkstra.o $(CFLAGS)
+
+digraph.o: digraph.cpp
+	$(CC) digraph.cpp -o digraph.o $(CFLAGS)
 
 clean:
 	@rm -f $(OBJS)
