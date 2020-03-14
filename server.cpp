@@ -19,7 +19,6 @@
 using namespace std;
 
 
-
 struct Point
 {
     long long lat; // latitude of the point
@@ -27,7 +26,6 @@ struct Point
 };
 
 unordered_map<int, Point> points;
-
 
 long long manhattan(const Point &pt1, const Point &pt2)
 {
@@ -54,7 +52,6 @@ long long findVertex(long long lat, long long lon)
             oldVal = final;
             vertex = key;
         }
-
     }
     return vertex;
 }
@@ -62,93 +59,56 @@ long long findVertex(long long lat, long long lon)
 void readGraph(string filename, WDigraph &graph, unordered_map<int, Point> &points)
 {
     // Initializing of variables
-
     string line;
     fstream file;
     file.open(filename);
-
-
     Point pt1;
-
-
     // Reading the file line by line until there are no lines left
-
     while(getline(file, line))
     {
-
         string str2 = line.substr(0, 1);
-
         // If the first char in the line is V then a vertex will be added
         if(str2 == "V")
         {
-
             int start = line.find(',');
             int end = line.find(',', start + 1);
-
             string subS = line.substr(start + 1, end - start - 1);
-
             start = end;
             end = line.find(',', start + 1);
-            //cout<<end<<endl;
-            //cout<<"_____"<<endl;
             string lat = line.substr(start + 1, end - start - 1);
-            //cout<<"lat "<< lat<<endl;
-
             start = end;
-
-            //end = line.find('\n', start +1);
-            //cout<<end<<endl;
-            //cout<<"_____"<<endl;
             string lon = line.substr(start + 1, line.length() - 1);
-            //cout<<"lon "<<lon<<endl;
-
             int vertex = stoi(subS);
             double latDoub = stod(lat);
             double lonDoub = stod(lon);
-            //cout<<vertex<<endl;
-
             long long newLon = static_cast<long long>(lonDoub * 100000);
             long long newLat = static_cast<long long>(latDoub * 100000);
-
             pt1.lat = newLat;
             pt1.lon = newLon;
-            //cout<<pt1.lat<< " " <<pt1.lon<<endl;
             points[vertex] = pt1;
-            //cout<<"here11"<<endl;
             graph.addVertex(vertex);
-            //break;
-
-
-
             // Else if the first char in the line is E then an edge will be added
         }
         else if(str2 == "E")
         {
             int startingPos1 = line.find(",", 2) - 2;
             int startingPos2 = line.find(",", line.find(",", 2) + 1) - 3 - startingPos1;
-
             string str3 = line.substr(2, startingPos1);
             string str4 = line.substr(line.find(",", 2) + 1, startingPos2);
-            //cout<<str3<<" "<<str4<<endl;
             int vertex1 = stoi(str3);
             if(vertex1 == 369908563)
             {
                 cout << "C " << endl;
             }
-
             int vertex2 = stoi(str4);
-
             long long cost = manhattan(points[vertex1], points[vertex2]);
-
             graph.addEdge(vertex1, vertex2, cost);
-            //graph.addEdge(vertex2, vertex1, cost);
-
         }
     }
     file.close();
-
 }
 
+//Contains bulk code for handling server retrievial of data and calculations
 void server(char inputFile[], char outputFile[], WDigraph graph)
 {
     unordered_map<int, PIL> searchTree;
@@ -216,20 +176,18 @@ void server(char inputFile[], char outputFile[], WDigraph graph)
                     output << "E" << endl;
                     break;
                 }
+                //Checks for timeout
                 clock_t time = clock() - timer;
                 if((time / CLOCKS_PER_SEC) >= 10)
                 {
-                    float t = time / CLOCKS_PER_SEC;
-                    cout << "This much time has elapsed: " << t << endl;
                     cout << "Timeout has occured" << endl;
                     break;
                 }
 
             }
-
+            input.close();
             output.close();
             break;
-
         }
     }
 }
@@ -241,10 +199,7 @@ int main(int argc, char *argv[])
     WDigraph graph;
     char *inputFile = argv[1];
     char *outputFile = argv[2];
-    // edmonton-roads-2.0.1.txt
     readGraph("edmonton-roads-2.0.1.txt", graph, points);
     server(inputFile, outputFile, graph);
-
-
     return 0;
 }
