@@ -9,6 +9,7 @@
 #include "wdigraph.h"
 #include "dijkstra.h"
 #include "heap.h"
+#include <time.h>
 #include <iostream>
 #include <fstream>
 #include <queue>
@@ -43,16 +44,13 @@ long long findVertex(long long lat, long long lon){
     for(auto i = points.begin(); i != points.end(); i++){
         long long key = i->first;
         Point p = points[key];
-        cout << p.lat << " " << p.lon << endl;
         long long x = abs(p.lat-lat);
         long long y = abs(p.lon-lon);
         long long final = x+y;
         if(final< oldVal){
-            cout << p.lat << " " << p.lon << endl;
             oldVal = final;
             vertex = key;
         }
-        cout << "end" << endl;
 
     }
     return vertex;
@@ -151,10 +149,8 @@ void dijkstra(const WDigraph& graph, int startVertex, unordered_map<int, PIL>& s
         events.popMin();
         int v = node.item.second;
         if(searchTree.find(v) == searchTree.end()){
-            cout << v << endl;
             searchTree[node.item.second] = node.item;
             for (auto iter = graph.neighbours(v); iter != graph.endIterator(v); iter++) {
-                cout << "helleo" << endl;
                 int w = *iter;
                 PIL next = PIL(v,w);
                 int cost = manhattan(points[v], points[w]);
@@ -171,7 +167,7 @@ void server(char inputFile[], char outputFile[], WDigraph graph){
     string inFile = inputFile;
     string outFile = outputFile;
     ifstream input;
-    ifstream output;
+    ofstream output;
     input.open(inFile, ifstream::in);
     output.open(outFile, ifstream::out);
     while(true){
@@ -190,14 +186,10 @@ void server(char inputFile[], char outputFile[], WDigraph graph){
             int end = dataLine.find("\n", space4+1);
             long long lon2 = stoi(dataLine.substr(space4+1, end-space4));
             long long startVertex = findVertex(lat1, lon1);
-            // cout << lat1 << " " << lon1 << endl;
             dijkstra(graph, startVertex,searchTree);
             long long endVertex = findVertex(lat2, lon2);
 
-
-
             list<int> path;
-            cout << searchTree.size() << endl;
             if (searchTree.find(endVertex) == searchTree.end()) {
               cout << "Vertex " << endVertex << " not reachable from " << startVertex << endl;
             }
@@ -205,24 +197,43 @@ void server(char inputFile[], char outputFile[], WDigraph graph){
               int stepping = endVertex;
               while (stepping != startVertex) {
                 path.push_front(stepping);
-
-                // crawl up the search tree one step
                 stepping = searchTree[stepping].first;
               }
               path.push_front(startVertex);
+              cout << path.size() << endl;
+            } 
+            //ADJUST THIS AREA FOR SERIAL COMMUNICATON FOR
+            //PART 2
+            output<< "N "<< path.size() << endl; 
+            int count = path.size();
+            clock_t timer = clock();
+            //check input
+            while(true){
+                char line[2];
+                input.getline(line, 2);
+                if(line[0] == 'A' && count != 0){
+                    int key = path.front();
+                    path.pop_front();
+                    Point p = points[key];
+                    output<< "W "<< p.lat << " " << p.lon << endl;
+                    count --;
+                }if(count == 0){
+                    output << "E" << endl;
+                    break;
+                }
+                clock_t time = clock()-timer;
+                if((time/CLOCKS_PER_SEC) >= 10){
+                    float t = time/CLOCKS_PER_SEC;
+                    cout << "This much time has elapsed: " << t << endl;
+                    cout << "Timeout has occured" << endl;
+                    break;
+                }
 
-              cout << "Cost of cheapest path from " << startVertex << " to "
-                   << endVertex << " is: " << searchTree[endVertex].second << endl;
-              cout << "Path:";
-              for (auto it : path) {
-                cout << ' ' << it;
-              }
-              cout << endl;
             }
-            
 
-
+            output.close();
             break;
+
         }
     }
 }
