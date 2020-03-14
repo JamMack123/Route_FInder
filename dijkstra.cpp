@@ -15,7 +15,7 @@ void dijkstra(const WDigraph& graph, int startVertex, unordered_map<int, PIL>& t
             for (auto iter = graph.neighbours(v); iter != graph.endIterator(v); iter++) {
                 long long w = *iter;
                 PIL next = PIL(v,w);
-                long long cost = graph.getCost(v,w);
+                long long cost = node.key + graph.getCost(v,w);
                 events.insert(next,cost);
             }
         }
