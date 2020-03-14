@@ -26,6 +26,9 @@ Included Files:
 		-BAsic header file
 	-widgrgah.h
 		-Alters digraph to make it have weights
+	-edmonton-roads-2.0.1.txt
+		-File containg the data to build a weighted graph. We didn't know if we needed to include this or not so we included
+		it thinking we had to include it
 
 Running instructions:
 
