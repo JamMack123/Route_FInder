@@ -38,14 +38,19 @@ long long manhattan(const Point &pt1, const Point &pt2)
 //Taking the latitude and longitude finds the nearest vertex
 long long findVertex(long long lat, long long lon)
 {
+    // Initialized the variables that will be used
     long long oldVal = 100000000000000;
     long long vertex = -1;
+
+    // Iterating through the point struct
     for(auto i = points.begin(); i != points.end(); i++)
     {
         long long key = i->first;
         Point p = points[key];
         long long x = abs(p.lat - lat);
         long long y = abs(p.lon - lon);
+
+        // Calculating the distance
         long long final = x + y;
         if(final < oldVal)
         {
@@ -87,8 +92,9 @@ void readGraph(string filename, WDigraph &graph, unordered_map<int, Point> &poin
             pt1.lon = newLon;
             points[vertex] = pt1;
             graph.addVertex(vertex);
-            // Else if the first char in the line is E then an edge will be added
+
         }
+        // Else if the first char in the line is E then an edge will be added
         else if(str2 == "E")
         {
             int startingPos1 = line.find(",", 2) - 2;
@@ -96,10 +102,6 @@ void readGraph(string filename, WDigraph &graph, unordered_map<int, Point> &poin
             string str3 = line.substr(2, startingPos1);
             string str4 = line.substr(line.find(",", 2) + 1, startingPos2);
             int vertex1 = stoi(str3);
-            if(vertex1 == 369908563)
-            {
-                cout << "C " << endl;
-            }
             int vertex2 = stoi(str4);
             long long cost = manhattan(points[vertex1], points[vertex2]);
             graph.addEdge(vertex1, vertex2, cost);
@@ -124,6 +126,7 @@ void server(char inputFile[], char outputFile[], WDigraph graph)
         string dataLine;
         input.getline(line, 200);
         dataLine = line;
+        // if the server has read in an R then the data will be processed and the path will be found
         if(dataLine[0] == 'R')
         {
             int space1 = dataLine.find(" ");
@@ -153,12 +156,14 @@ void server(char inputFile[], char outputFile[], WDigraph graph)
                 }
                 path.push_front(startVertex);
             }
-            //ADJUST THIS AREA FOR SERIAL COMMUNICATON FOR
-            //PART 2
+            
+
             output << "N " << path.size() << endl;
             int count = path.size();
             clock_t timer = clock();
-            //check input
+            
+            // Processing the data from the input file and including a delay option
+            // for when the server has waited for over 10 secs
             while(true)
             {
                 char line[2];
