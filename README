@@ -9,17 +9,29 @@ Assignment #2 Route finder Part #2
 Included Files:
 
 	- server.cpp
+		-Contains code for reading and wrting to files
 	- dijkstra.cpp
+		-Contains code for the dijkstras algorthim
 	- dijkstra.h
+		-Basic header file
 	- heap.h
+		-basic header file
 	- MakeFile
+		-Includes the ability to type make and creat the program
 	- README
+		-this file you are currently reading, tell you about what the other files do
+	-digraph.cpp
+		-File containg code for a directed graph
+	-diagraph.h
+		-BAsic header file
+	-widgrgah.h
+		-Alters digraph to make it have weights
 
 Running instructions:
 
 	- Type make server into the terminal to compile the files
 	- If successful type ./server <INPUT FILE> <OUTPUT FILE> to run code where INPUT FILE/OUTPUT are the desired files with the desired data
-	  (for our testing purposes we used test00-input.txt and mysol.txt)
+	  (for our testing purposes we used test00-input.txt and test01-input.txt and mysol.txt)
 
 Wiring instructions
 
