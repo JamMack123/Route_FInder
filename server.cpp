@@ -145,6 +145,8 @@ void server(char inputFile[], char outputFile[], WDigraph graph)
             if (searchTree.find(endVertex) == searchTree.end())
             {
                 cout << "Vertex " << endVertex << " not reachable from " << startVertex << endl;
+                output << "N 0" << endl;
+
             }
             else
             {
