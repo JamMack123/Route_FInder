@@ -14,81 +14,77 @@ uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
   Serial.println(stringTogether);
 
   
-  while(true){
-    char readInLine = Serial.readbyte();
+  while(Serial.available() > 0){
+    char readInLine = Serial.read();
     if(readInLine == "N"){
-      int numCommands = Serial.readbyte()
+      int numCommands = Serial.read();
       Serial.println("A");
+      shared.num_waypoints = numCommands;
       break;
     }
-    // String subS = readInLine.substring(0,2);
-    // if(readInLine != ""){
-    //   String subS = readInLine.substring(0,2);
-    //   if(subS == "N"){
-    //     bool acknol = writeline("A\n");
-    //     if(acknol){
-    //       break;
-    //     }
-    //   }
   }
-    
-    
-    //String subS = readInLine.substring(2,readInLine.length() - 1);
-    //int numCommands = subS.toInt(); //make sure this is ok
-    shared.num_waypoints = numCommands;
+  
+  
 
-    int i = 0;
-    while(i < numCommands){
+  int i = 0;
+  while(i < numCommands){
 
-      String readInLine = readline(10000);
+    while(Serial.available() > 0){
+      String readInLine = Serial.read();
+      if(readInLine == "W"){
+        int lat = Serial.read();
+        int lon = Serial.read();
+        shared.waypoints[i].lon = lon;
+        shared.waypoints[i].lat = lat;
 
-      if(readInLine != ""){
-        String substr = readInLine.substring(0,2);
-        if(substr == "W"){
-
-          int start = substr.indexOf(' ');
-          int end = substr.indexOf(' ', start + 1);
-          String lat = substr.substring(start + 1, end);
-          start = end;
-          end = substr.indexOf('\n', start + 1);
-          String lon = substr.substring(start + 1, end);
-          
-          int latInt = lat.toInt();
-          int lonInt = lon.toInt();
-
-          shared.waypoints[i].lon = lonInt;
-          shared.waypoints[i].lat = latInt;
-
-          bool acknol = writeline("A\n");
-
-          if(!(acknol)){
-            break;
-          } else {
-            i++;
-          }
+        Serial.println("A");
+        break;
+      }
+      i++;
+    }
+    while(Serial.available() > 0){
+      if(i + 1 == numCommands){
+        char endMessage = Serial.read();
+        if(endMessage == "E"){
+          return 1;
+          break;
         }
       }
     }
+    //String readInLine = readline(10000);
 
-    if(i + 1 == numCommands){
-      String endMessage = readline(10000);
-      if(endMessage == "E\n"){
-        return 1;
-      }
-    }
-  
+    //   if(readInLine != ""){
+    //     String substr = readInLine.substring(0,2);
+    //     if(substr == "W"){
 
-  // Currently this does not communicate over the serial port.
-  // It just stores a path length of 0. You should make it communicate with
-  // the server over Serial using the protocol in the assignment description.
+    //       int start = substr.indexOf(' ');
+    //       int end = substr.indexOf(' ', start + 1);
+    //       String lat = substr.substring(start + 1, end);
+    //       start = end;
+    //       end = substr.indexOf('\n', start + 1);
+    //       String lon = substr.substring(start + 1, end);
+          
+    //       int latInt = lat.toInt();
+    //       int lonInt = lon.toInt();
 
-  // TODO: implement the communication protocol from the assignment
+    //       shared.waypoints[i].lon = lonInt;
+    //       shared.waypoints[i].lat = latInt;
 
-  // for now, nothing is stored
-  
+    //       bool acknol = writeline("A\n");
 
-  // 1 indicates a successful exchange, of course you should only output 1
-  // in your final solution if the exchange was indeed successful
-  // (otherwise, return 0 if the communication failed)
-  //return 1;
+    //       if(!(acknol)){
+    //         break;
+    //       } else {
+    //         i++;
+    //       }
+    //     }
+    //   }
+    // }
+
+    // if(i + 1 == numCommands){
+    //   String endMessage = readline(10000);
+    //   if(endMessage == "E\n"){
+    //     return 1;
+    //   }
+    // }
 }
