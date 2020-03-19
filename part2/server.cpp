@@ -49,19 +49,17 @@ long long findVertex(long long lat, long long lon)
     {
         long long key = i->first;
         Point p = points[key];
-        long long x = abs(p.lat - lat);
-        long long y = abs(p.lon - lon);
+        long long x = abs(lat - p.lat);
+        long long y = abs(lon - p.lon);
 
         // Calculating the distance
         long long final = x + y;
         if(final < oldVal)
         {
-            cout << final << " " << key << endl;
             oldVal = final;
             vertex = key;
         }
     }
-    cout << "end" << endl;
     return vertex;
 }
 
@@ -122,13 +120,11 @@ void server(WDigraph graph)
     {
         string dataLine;
         dataLine =Serial.readline(10);
-        cout << dataLine;
         // if the server has read in an R then the data will be processed and the path will be found
         if(dataLine[0] == 'R')
         {
             int space1 = dataLine.find(" ");
             int space2 = dataLine.find(" ", space1 + 1);
-            cout <<" Hi" << endl;
             long long lat1 = stoi(dataLine.substr(space1 + 1, space2 - space1));
             int space3 = dataLine.find(" ", space2 + 1);
             long long lon1 = stoi(dataLine.substr(space2 + 1, space3 - space1));
@@ -138,17 +134,13 @@ void server(WDigraph graph)
             long long lon2 = stoi(dataLine.substr(space4 + 1, end - space4));
             long long startVertex = findVertex(lat1, lon1);
             dijkstra(graph, startVertex, searchTree);
-            cout << lat1 <<" " << lon1 << endl;
-            cout << lat2 << " " << lon2 << endl;
             long long endVertex = findVertex(lat2, lon2);
-            cout << startVertex <<" " << endVertex << endl;
             list<long long> path;
             if (searchTree.find(endVertex) == searchTree.end())
             {
                 cout << "Vertex " << endVertex << " not reachable from " << startVertex << endl;
                 Serial.writeline("N 0 \n");
                 break;
-
             }
             else
             {
@@ -161,7 +153,7 @@ void server(WDigraph graph)
                 path.push_front(startVertex);
             }
             string temp;
-            cout << path.size() << endl;
+            cout << "N " << path.size() << endl; 
             temp = "N " + path.size();
             Serial.writeline(temp);
             int count = path.size();
