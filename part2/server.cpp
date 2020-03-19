@@ -26,7 +26,7 @@ struct Point
     long long lon; // longitude of the point
 };
 
-SerialPort Serial("/dev/ttyACM0");
+SerialPort Serial("/dev/ttyACM1");
 unordered_map<int, Point> points;
 
 long long manhattan(const Point &pt1, const Point &pt2)
@@ -153,9 +153,12 @@ void server(WDigraph graph)
                 path.push_front(startVertex);
             }
             string temp;
-            cout << "N " << path.size() << endl; 
+            cout << "Server: N " << path.size() << endl; 
             temp = "N " + path.size();
             Serial.writeline(temp);
+            string line;
+            line = Serial.readline(10000);
+            cout << line << endl;
             int count = path.size();
             clock_t timer = clock();
             
@@ -163,7 +166,7 @@ void server(WDigraph graph)
             // for when the server has waited for over 10 secs
             while(true)
             {
-                string line;
+                // string line;
                 line = Serial.readline(10000);
                 if(line[0] == 'A' && count != 0)
                 {
