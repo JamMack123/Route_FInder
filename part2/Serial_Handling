@@ -11,80 +11,33 @@ uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
   //list<pair<int, int>> path;
   
   String stringTogether = "R " + startLat + " " + startLon + " " + endLat + " " + endLon + "\n";
-  Serial.println(stringTogether);
-
-  
+  Serial.print(stringTogether);
+  Serial.flush();
+  String line;
+  // Serial.setTimeout(10000);
+  int numCommands = 0;
   while(Serial.available() > 0){
-    char readInLine = Serial.read();
-    if(readInLine == "N"){
-      int numCommands = Serial.read();
-      Serial.println("A");
-      shared.num_waypoints = numCommands;
+    char data = Serial.read();
+    if(data == '\n'){
       break;
     }
+    line = line + data;
   }
-  
-  
+  Serial.print(line);
+  // Serial.print("HHAHAHAHHAH");
+  // if(data[0] == 'N'){
+  //     String val = data[2];
+  //     numCommands = val.toInt();
+  //     Serial.print("HAHAHAHA");
+  //     Serial.flush();
 
-  int i = 0;
-  while(i < numCommands){
-
-    while(Serial.available() > 0){
-      String readInLine = Serial.read();
-      if(readInLine == "W"){
-        int lat = Serial.read();
-        int lon = Serial.read();
-        shared.waypoints[i].lon = lon;
-        shared.waypoints[i].lat = lat;
-
-        Serial.println("A");
-        break;
-      }
-      i++;
-    }
-    while(Serial.available() > 0){
-      if(i + 1 == numCommands){
-        char endMessage = Serial.read();
-        if(endMessage == "E"){
-          return 1;
-          break;
-        }
-      }
-    }
-    //String readInLine = readline(10000);
-
-    //   if(readInLine != ""){
-    //     String substr = readInLine.substring(0,2);
-    //     if(substr == "W"){
-
-    //       int start = substr.indexOf(' ');
-    //       int end = substr.indexOf(' ', start + 1);
-    //       String lat = substr.substring(start + 1, end);
-    //       start = end;
-    //       end = substr.indexOf('\n', start + 1);
-    //       String lon = substr.substring(start + 1, end);
-          
-    //       int latInt = lat.toInt();
-    //       int lonInt = lon.toInt();
-
-    //       shared.waypoints[i].lon = lonInt;
-    //       shared.waypoints[i].lat = latInt;
-
-    //       bool acknol = writeline("A\n");
-
-    //       if(!(acknol)){
-    //         break;
-    //       } else {
-    //         i++;
-    //       }
-    //     }
-    //   }
-    // }
-
-    // if(i + 1 == numCommands){
-    //   String endMessage = readline(10000);
-    //   if(endMessage == "E\n"){
-    //     return 1;
-    //   }
-    // }
+  // }
+  // while(numCommands != 0){
+  //   Serial.readString();
+  //   Serial.print("A\n");
+  //   numCommands--;
+  // }
+  shared.num_waypoints = 0;
+  return 0;
 }
+  
