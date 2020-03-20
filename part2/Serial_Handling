@@ -3,6 +3,18 @@
 //MCUFRIEND_kbv tft;
 extern shared_vars shared;
 
+String readData(){
+  String line = "";
+  while(Serial.available() > 0){
+    char data = Serial.read();
+    if(data == '\n'){
+      break;
+    }
+    line = line + data;
+  }
+  return line;
+}
+
 uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
   String startLon = String(start.lon);
   String startLat = String(start.lat);
@@ -11,33 +23,84 @@ uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
   //list<pair<int, int>> path;
   
   String stringTogether = "R " + startLat + " " + startLon + " " + endLat + " " + endLon + "\n";
-  Serial.print(stringTogether);
+  Serial.println(stringTogether);
   Serial.flush();
-  String line;
-  // Serial.setTimeout(10000);
-  int numCommands = 0;
-  while(Serial.available() > 0){
-    char data = Serial.read();
-    if(data == '\n'){
+  Serial.setTimeout(10000);
+  int numCommands;
+
+  String commandLine = readData();
+  if(commandLine[0] == "N"){
+    numCommands = (commandLine.substring(2)).toInt();
+    Serial.println("A");
+    Serial.flush();
+    shared.num_waypoints = numCommands;
+    
+  }
+  
+
+  Serial.setTimeout(1000);
+  int i = 0;
+  while(i < numCommands){
+    
+    String commandLine = readData();
+    if(commandLine[0] == "W"){
+      int lat = (commandLine.substring(2, 9)).toInt();
+      int lon = (commandLine.substring(10)).toInt();
+      shared.waypoints[i].lon = lon;
+      shared.waypoints[i].lat = lat;
+
+      Serial.println("A");
+      Serial.flush();
       break;
     }
-    line = line + data;
+    i++;
   }
-  Serial.print(line);
-  // Serial.print("HHAHAHAHHAH");
-  // if(data[0] == 'N'){
-  //     String val = data[2];
-  //     numCommands = val.toInt();
-  //     Serial.print("HAHAHAHA");
-  //     Serial.flush();
 
-  // }
-  // while(numCommands != 0){
-  //   Serial.readString();
-  //   Serial.print("A\n");
-  //   numCommands--;
-  // }
-  shared.num_waypoints = 0;
-  return 0;
-}
+
+  commandLine = readData();
+  if(i + 1 == numCommands){
+    
+    if(commandLine[0] == "E"){
+      return 1;
+      
+    }
+  }
+    
   
+    //String readInLine = readline(10000);
+
+    //   if(readInLine != ""){
+    //     String substr = readInLine.substring(0,2);
+    //     if(substr == "W"){
+
+    //       int start = substr.indexOf(' ');
+    //       int end = substr.indexOf(' ', start + 1);
+    //       String lat = substr.substring(start + 1, end);
+    //       start = end;
+    //       end = substr.indexOf('\n', start + 1);
+    //       String lon = substr.substring(start + 1, end);
+          
+    //       int latInt = lat.toInt();
+    //       int lonInt = lon.toInt();
+
+    //       shared.waypoints[i].lon = lonInt;
+    //       shared.waypoints[i].lat = latInt;
+
+    //       bool acknol = writeline("A\n");
+
+    //       if(!(acknol)){
+    //         break;
+    //       } else {
+    //         i++;
+    //       }
+    //     }
+    //   }
+    // }
+
+    // if(i + 1 == numCommands){
+    //   String endMessage = readline(10000);
+    //   if(endMessage == "E\n"){
+    //     return 1;
+    //   }
+    // }
+}
