@@ -26,7 +26,7 @@ struct Point
     long long lon; // longitude of the point
 };
 
-SerialPort Serial("/dev/ttyACM1");
+SerialPort Serial("/dev/ttyACM0");
 unordered_map<int, Point> points;
 
 long long manhattan(const Point &pt1, const Point &pt2)
@@ -119,7 +119,7 @@ void server(WDigraph graph)
     while(true)
     {
         string dataLine;
-        dataLine =Serial.readline(10);
+        dataLine =Serial.readline(10000);
         // if the server has read in an R then the data will be processed and the path will be found
         if(dataLine[0] == 'R')
         {
@@ -154,11 +154,8 @@ void server(WDigraph graph)
             }
             string temp;
             cout << "Server: N " << path.size() << endl; 
-            temp = "N " + path.size();
-            Serial.writeline(temp);
-            string line;
-            line = Serial.readline(10000);
-            cout << line << endl;
+            temp = "N " + to_string(path.size()) + "\n";
+            while(!Serial.writeline(temp));
             int count = path.size();
             clock_t timer = clock();
             
@@ -166,22 +163,30 @@ void server(WDigraph graph)
             // for when the server has waited for over 10 secs
             while(true)
             {
-                // string line;
+                cerr << "HERE WE ARE" << endl;
+                string line;
                 line = Serial.readline(10000);
+                cerr << line;
+                line = Serial.readline(10000);
+                cerr << line;
                 if(line[0] == 'A' && count != 0)
                 {
                     int key = path.front();
                     path.pop_front();
+                    // cerr << key << endl;
                     Point p = points[key];
-                    temp = "W "+ p.lat;
+                    temp = "W "+ to_string(p.lat);
                     temp = temp + " ";
                     temp = temp + to_string(p.lon);
                     temp = temp + "\n";
+                    // cerr << temp << endl;
                     Serial.writeline(temp);
+                    // cerr << key << endl;
                     count --;
                 }
                 if(count == 0)
                 {
+                    cout << "Data has been sent" << endl;
                     Serial.writeline("E\n");
                     break;
                 }
