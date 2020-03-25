@@ -5,17 +5,26 @@ extern shared_vars shared;
 
 String readData(){
   String line = "";
-  while(Serial.available() > 0){
-    char data = Serial.read();
-    if(data == '\n'){
-      break;
+  int time = millis();
+  while(true){
+    if(millis() - time >= 1000){
+      return line;
     }
-    line = line + data;
+    if(Serial.available() != 0){
+      char data = Serial.read();
+      line = line+data;
+      if(data == "\n"){
+        return line;
+      }
+    }
   }
-  return line;
+  
 }
 
 uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
+  while(Serial.available() > 0){
+    Serial.read();
+  }
   String startLon = String(start.lon);
   String startLat = String(start.lat);
   String endLon = String(end.lon);
@@ -23,48 +32,73 @@ uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
   //list<pair<int, int>> path;
   
   String stringTogether = "R " + startLat + " " + startLon + " " + endLat + " " + endLon + "\n";
-  Serial.println(stringTogether);
+  Serial.print(stringTogether);
   Serial.flush();
-  Serial.setTimeout(10000);
   int numCommands;
-
   String commandLine = readData();
-  if(commandLine[0] == "N"){
-    numCommands = (commandLine.substring(2)).toInt();
-    Serial.println("A");
+  if(commandLine[0] == 'N'){
+    numCommands = commandLine.substring(2).toInt();
+    Serial.print("A\n");
     Serial.flush();
-    shared.num_waypoints = numCommands;
-    
+    Serial.print(numCommands);
+    // shared.num_waypoints = numCommands;
+    for(int i = 0; i < numCommands; i++){
+      commandLine = readData();
+      Serial.print(commandLine);
+      Serial.print("A\n");
+      Serial.flush();
+    }
+    Serial.println("DOne!");
   }
+  return 1;
+}
+//   if(test){
+//     while(true){
+//       String data = readData();
+//       Serial.print(data);
+//       Serial.flush();
+//       if(data.substring(0,1)=='W'){
+//         Serial.print("A\n");
+//         Serial.flush();
+//       }else if(data=="E\n"){
+//         Serial.print("A\n");
+//         Serial.flush();
+//         return 1;
+//       }else{
+//         return 0;
+//       }
+//     }
+//   }
+// }
   
 
-  Serial.setTimeout(1000);
-  int i = 0;
-  while(i < numCommands){
+  // int i = 0;
+  // while(i < numCommands){
     
-    String commandLine = readData();
-    if(commandLine[0] == "W"){
-      int lat = (commandLine.substring(2, 9)).toInt();
-      int lon = (commandLine.substring(10)).toInt();
-      shared.waypoints[i].lon = lon;
-      shared.waypoints[i].lat = lat;
+  //   String commandLine = readData();
+  //   Serial.print(commandLine);
+  //   if(commandLine.substring(0,1) == 'W'){
+  //     int lat = (commandLine.substring(2, 9)).toInt();
+  //     int lon = (commandLine.substring(10)).toInt();
+  //     shared.waypoints[i].lon = lon;
+  //     shared.waypoints[i].lat = lat;
 
-      Serial.println("A");
-      Serial.flush();
-      break;
-    }
-    i++;
-  }
+  //     Serial.print("A\n");
+  //     Serial.flush();
+  //     break;
+  //   }
+  //   i++;
+  // }
 
 
-  commandLine = readData();
-  if(i + 1 == numCommands){
+  // commandLine = readData();
+  // if(i + 1 == numCommands){
     
-    if(commandLine[0] == "E"){
-      return 1;
+  //   if(commandLine[0] == "E"){
+  //     return 1;
       
-    }
-  }
+  //   }
+  // }
     
   
     //String readInLine = readline(10000);
@@ -103,4 +137,3 @@ uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
     //     return 1;
     //   }
     // }
-}
