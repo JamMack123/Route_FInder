@@ -152,10 +152,10 @@ void server(WDigraph graph)
                 }
                 path.push_front(startVertex);
             }
-            string temp;
-            cout << "Server: N " << path.size() << endl; 
+            string temp; 
             temp = "N " + to_string(path.size()) + "\n";
-            while(!Serial.writeline(temp));
+            cerr << "Server: " << temp;
+            Serial.writeline(temp);
             int count = path.size();
             clock_t timer = clock();
             
@@ -163,14 +163,16 @@ void server(WDigraph graph)
             // for when the server has waited for over 10 secs
             while(true)
             {
-                cerr << "HERE WE ARE" << endl;
                 string line;
-                line = Serial.readline(10000);
+                line = Serial.readline(1000);
                 cerr << line;
-                line = Serial.readline(10000);
-                cerr << line;
-                if(line[0] == 'A' && count != 0)
+                // if(line == ""){
+                //     cout << "Timeout has occured" << endl;
+                // }
+                if(line == "A\n" && count != 0)
                 {
+                    cerr <<"HERE" << endl;
+                    timer = clock();
                     int key = path.front();
                     path.pop_front();
                     // cerr << key << endl;
@@ -188,13 +190,21 @@ void server(WDigraph graph)
                 {
                     cout << "Data has been sent" << endl;
                     Serial.writeline("E\n");
+                    line = Serial.readline(1000);
+                    cerr << line;
+                    line = Serial.readline(1000);
+                    cerr << line;
+                    line = Serial.readline(1000);
+                    cerr << line;
+                    line = Serial.readline(1000);
+                    cerr << line;
                     break;
                 }
                 //Checks for timeout
                 clock_t time = clock() - timer;
                 if((time / CLOCKS_PER_SEC) >= 10)
                 {
-                    cout << "Timeout has occured" << endl;
+                    cout << "Timeout has occured GOOD ONE" << endl;
                     break;
                 }
 
