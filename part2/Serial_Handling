@@ -69,3 +69,4 @@ uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
   }
   return 0;
 }
+
