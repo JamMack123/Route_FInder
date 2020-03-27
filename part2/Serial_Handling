@@ -44,20 +44,16 @@ uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
     }
     Serial.print("A\n");
     Serial.flush();
-    // shared.num_waypoints = numCommands;
+    shared.num_waypoints = numCommands;
     while(true){
       commandLine = readData(1000);
-      // Serial.print(commandLine);
-      // Serial.println(commandLine[0]);
       if(commandLine[0] == 'W'){
-        time = millis();
         Serial.print("A\n");
         Serial.flush();
       }else if(commandLine[0] == 'E'){
         break;
       }
     }
-    // Serial.println("DONENENENEN");
     return 1;
   }
   delay(10000);
