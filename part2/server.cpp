@@ -121,7 +121,6 @@ void server(WDigraph graph)
 
         string dataLine;
         dataLine =Serial.readline();
-        cerr << dataLine << endl;
         // if the server has read in an R then the data will be processed and the path will be found
         if(dataLine[0] == 'R')
         {
@@ -157,37 +156,21 @@ void server(WDigraph graph)
             string temp; 
             temp = "N " + to_string(path.size()) + "\n";
             cerr << "Server: " << temp;
-            bool vl = Serial.writeline(temp);
-            cerr << vl << endl;
+            Serial.writeline(temp);
             int count = path.size();
             clock_t timer = clock();
-            // string line = Serial.readline(10000);
-            // bool run = false;
-            // char val = line[0];
-            // if(val == 'A'){
-            //     run = true;
-            // }else{
-            //     cout << line[0] << endl;
-            //     break;
-            // }
             // Processing the data from the input file and including a delay option
             // for when the server has waited for over 10 secs
             while(true)
             {
                 string line ="";
                 line = Serial.readline(1000);
-                cerr << line;
                 if(line[0] =='R'){
                     cerr << "R recieved"<< endl;
                     continue;
                 }
-                // cerr << count << endl;
-                // if(line == ""){
-                //     cout << "Timeout has occured" << endl;
-                // }
                 if(line == "A\n" && count != 0)
                 {
-                    cerr <<"HERE" << endl;
                     timer = clock();
                     int key = path.front();
                     path.pop_front();
@@ -211,24 +194,10 @@ void server(WDigraph graph)
                         cerr << line;
                         line = Serial.readline(1000);
                         cerr << line;
-                        line = Serial.readline(1000);
-                        cerr << line;
-                        line = Serial.readline(1000);
-                        cerr << line;
-                        line = Serial.readline(1000);
-                        cerr << line;
-                        line = Serial.readline(1000);
-                        cerr << line;
-                        line = Serial.readline(1000);
-                        cerr << line;
-                        line = Serial.readline(1000);
-                        cerr << line;
-                        line = Serial.readline(1000);
-                        cerr << line;
-                        cout << "Data has been sent" << endl;
+                        cout << "Data has been sent!" << endl;
                         break;
                     }else{
-                        cerr << line << " Was recieved"<< endl;
+                        cerr << line << " Was recieved: Restarting"<< endl;
                         break;
                     }
                 }
@@ -236,14 +205,13 @@ void server(WDigraph graph)
                 clock_t time = clock() - timer;
                 if((time / CLOCKS_PER_SEC) >= 10)
                 {
-                    cout << "Timeout has occured GOOD ONE" << endl;
+                    cout << "Timeout has occured: Restarting" << endl;
                     break;
                 }
 
             }
             break;
         }else{
-            cerr << dataLine <<" Was recieved" << endl;
             break;
         }
     }
@@ -260,4 +228,3 @@ int main()
     }
     return 0;
 }
-
