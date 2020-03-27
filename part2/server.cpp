@@ -157,7 +157,8 @@ void server(WDigraph graph)
             string temp; 
             temp = "N " + to_string(path.size()) + "\n";
             cerr << "Server: " << temp;
-            Serial.writeline(temp);
+            bool vl = Serial.writeline(temp);
+            cerr << vl << endl;
             int count = path.size();
             clock_t timer = clock();
             // string line = Serial.readline(10000);
@@ -174,7 +175,7 @@ void server(WDigraph graph)
             while(true)
             {
                 string line ="";
-                line = Serial.readline();
+                line = Serial.readline(1000);
                 cerr << line;
                 if(line[0] =='R'){
                     cerr << "R recieved"<< endl;
@@ -196,7 +197,6 @@ void server(WDigraph graph)
                     temp = temp + " ";
                     temp = temp + to_string(p.lon);
                     temp = temp + "\n";
-                    cerr << temp; 
                     while(!Serial.writeline(temp));
                     // cerr << key << endl;
                     count --;
@@ -211,7 +211,19 @@ void server(WDigraph graph)
                         cerr << line;
                         line = Serial.readline(1000);
                         cerr << line;
-                        line = Serial.readline(10000);
+                        line = Serial.readline(1000);
+                        cerr << line;
+                        line = Serial.readline(1000);
+                        cerr << line;
+                        line = Serial.readline(1000);
+                        cerr << line;
+                        line = Serial.readline(1000);
+                        cerr << line;
+                        line = Serial.readline(1000);
+                        cerr << line;
+                        line = Serial.readline(1000);
+                        cerr << line;
+                        line = Serial.readline(1000);
                         cerr << line;
                         cout << "Data has been sent" << endl;
                         break;
@@ -248,3 +260,4 @@ int main()
     }
     return 0;
 }
+
