@@ -5,15 +5,15 @@ extern shared_vars shared;
 
 String readData(int timeout){
   String line = "";
-  int time = millis();
+  unsigned long time = millis();
   while(true){
     if(millis() - time >= timeout){
-      return line;
+      return "Passed";
     }
     if(Serial.available() != 0){
       char data = Serial.read();
       line = line+data;
-      if(data == '\n'){
+      if(data == '\n' || line.length() >= 200){
         return line;
       }
     }
@@ -22,22 +22,21 @@ String readData(int timeout){
 }
 
 uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
-  while(Serial.available() > 4){
-    Serial.read();
-  }
   String startLon = String(start.lon);
   String startLat = String(start.lat);
   String endLon = String(end.lon);
   String endLat = String(end.lat);
   //list<pair<int, int>> path;
-  
+  // String test = readData(1000);
+  // Serial.println(test);
   String stringTogether = "R " + startLat + " " + startLon + " " + endLat + " " + endLon + "\n";
   Serial.print(stringTogether);
   Serial.flush();
   int numCommands;
   delay(1000);
+  // Serial.println("Hello");
   String commandLine = readData(10000);
-  Serial.print(commandLine);
+  Serial.println(commandLine);
   if(commandLine[0] == 'N'){
     numCommands = commandLine.substring(2).toInt();
     if(numCommands == 0){
@@ -46,8 +45,6 @@ uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
     Serial.print("A\n");
     Serial.flush();
     // shared.num_waypoints = numCommands;
-    int time = millis();
-    int count  = numCommands;
     while(true){
       commandLine = readData(1000);
       // Serial.print(commandLine);
@@ -56,22 +53,16 @@ uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
         time = millis();
         Serial.print("A\n");
         Serial.flush();
-        count --;
       }else if(commandLine[0] == 'E'){
-        Serial.print(commandLine);
-        break;
-      }else if(millis()-time >= 10000){
-        // Serial.println("Timout");
-        while(Serial.available() > 0){
-          Serial.read();
-        }
         break;
       }
     }
     // Serial.println("DONENENENEN");
     return 1;
   }
-  delay(20000);
-  
+  delay(10000);
+  while(Serial.available() > 0){
+    Serial.read();
+  }
   return 0;
 }
