@@ -120,7 +120,7 @@ void server(WDigraph graph)
     {
 
         string dataLine;
-        dataLine =Serial.readline();
+        dataLine = Serial.readline();
         // if the server has read in an R then the data will be processed and the path will be found
         if(dataLine[0] == 'R')
         {
@@ -137,11 +137,11 @@ void server(WDigraph graph)
             dijkstra(graph, startVertex, searchTree);
             long long endVertex = findVertex(lat2, lon2);
             list<long long> path;
-            if (searchTree.find(endVertex) == searchTree.end() || path.size() >500)
+            if (searchTree.find(endVertex) == searchTree.end() || path.size() > 500)
             {
                 //Relays on server if path was too large or had no connection
                 //Same message is used for both as in bot cases a pth cannot safely
-                //be created on the arduno hardware 
+                //be created on the arduno hardware
                 cout << "Path not creatable" << endl;
                 //Writes no path message to client
                 Serial.writeline("N 0 \n");
@@ -158,7 +158,7 @@ void server(WDigraph graph)
                 path.push_front(startVertex);
             }
             //creates string to send to client
-            string temp; 
+            string temp;
             temp = "N " + to_string(path.size()) + "\n";
             //outputs the number of waypoints to the screen
             cout << "Number of waypoints: " << path.size() << endl;
@@ -169,7 +169,7 @@ void server(WDigraph graph)
             // for when the server has waited for over 10 secs
             while(true)
             {
-                string line ="";
+                string line = "";
                 line = Serial.readline(1000);
                 if(line == "A\n" && count != 0)
                 {
@@ -177,26 +177,29 @@ void server(WDigraph graph)
                     int key = path.front();
                     path.pop_front();
                     Point p = points[key];
-                    temp = "W "+ to_string(p.lat);
+                    temp = "W " + to_string(p.lat);
                     temp = temp + " ";
                     temp = temp + to_string(p.lon);
                     temp = temp + "\n";
                     while(!Serial.writeline(temp));
                     count --;
                 }
-                //Once all waypoints have bben sent REads to clean 
+                //Once all waypoints have bben sent REads to clean
                 //Any buffered data out of buffer
                 //Outputs to user when data transmission has completed
                 if(count == 0)
                 {
                     line = Serial.readline(1000);
-                    if(line[0] == 'A'){
+                    if(line[0] == 'A')
+                    {
                         line = Serial.readline(1000);
                         Serial.writeline("E\n");
                         line = Serial.readline(1000);
                         cout << "Data has been sent!" << endl;
                         break;
-                    }else{
+                    }
+                    else
+                    {
                         break;
                     }
                 }
@@ -211,7 +214,9 @@ void server(WDigraph graph)
 
             }
             break;
-        }else{
+        }
+        else
+        {
             break;
         }
     }
@@ -223,7 +228,8 @@ int main()
 {
     WDigraph graph;
     readGraph("edmonton-roads-2.0.1.txt", graph, points);
-    while(true){
+    while(true)
+    {
         server(graph);
     }
     return 0;
