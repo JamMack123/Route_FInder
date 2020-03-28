@@ -121,7 +121,6 @@ void server(WDigraph graph)
 
         string dataLine;
         dataLine =Serial.readline();
-        
         // if the server has read in an R then the data will be processed and the path will be found
         if(dataLine[0] == 'R')
         {
@@ -138,9 +137,13 @@ void server(WDigraph graph)
             dijkstra(graph, startVertex, searchTree);
             long long endVertex = findVertex(lat2, lon2);
             list<long long> path;
-            if (searchTree.find(endVertex) == searchTree.end())
+            if (searchTree.find(endVertex) == searchTree.end() || path.size() >500)
             {
-                cout << "Vertex " << endVertex << " not reachable from " << startVertex << endl;
+                //Relays on server if path was too large or had no connection
+                //Same message is used for both as in bot cases a pth cannot safely
+                //be created on the arduno hardware 
+                cout << "Path not creatable" << endl;
+                //Writes no path message to client
                 Serial.writeline("N 0 \n");
                 break;
             }
@@ -154,10 +157,11 @@ void server(WDigraph graph)
                 }
                 path.push_front(startVertex);
             }
+            //creates string to send to client
             string temp; 
             temp = "N " + to_string(path.size()) + "\n";
-            cout << "Points have been selected"<<endl;
-            cout<< "Number of waypoints: "<<temp;
+            //outputs the number of waypoints to the screen
+            cout << "Number of waypoints: " << path.size() << endl;
             Serial.writeline(temp);
             int count = path.size();
             clock_t timer = clock();
@@ -167,37 +171,32 @@ void server(WDigraph graph)
             {
                 string line ="";
                 line = Serial.readline(1000);
-                
                 if(line == "A\n" && count != 0)
                 {
                     timer = clock();
                     int key = path.front();
                     path.pop_front();
-                   
                     Point p = points[key];
                     temp = "W "+ to_string(p.lat);
                     temp = temp + " ";
                     temp = temp + to_string(p.lon);
                     temp = temp + "\n";
                     while(!Serial.writeline(temp));
-                    
                     count --;
                 }
+                //Once all waypoints have bben sent REads to clean 
+                //Any buffered data out of buffer
+                //Outputs to user when data transmission has completed
                 if(count == 0)
                 {
                     line = Serial.readline(1000);
-                    
                     if(line[0] == 'A'){
                         line = Serial.readline(1000);
                         Serial.writeline("E\n");
-                        cerr << line;
                         line = Serial.readline(1000);
-                        cerr << line;
                         cout << "Data has been sent!" << endl;
-                        cout<<"---------------------------------"<<endl;
                         break;
                     }else{
-                        cerr << line << " Was recieved: Restarting"<< endl;
                         break;
                     }
                 }
@@ -205,6 +204,7 @@ void server(WDigraph graph)
                 clock_t time = clock() - timer;
                 if((time / CLOCKS_PER_SEC) >= 10)
                 {
+                    //Tells user if a timeout has occured
                     cout << "Timeout has occured: Restarting" << endl;
                     break;
                 }
