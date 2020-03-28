@@ -44,4 +44,5 @@ void draw_route() {
 
 
     }
+    status_message("FROM?");
 }
