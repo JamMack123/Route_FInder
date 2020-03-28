@@ -121,6 +121,7 @@ void server(WDigraph graph)
 
         string dataLine;
         dataLine =Serial.readline();
+        
         // if the server has read in an R then the data will be processed and the path will be found
         if(dataLine[0] == 'R')
         {
@@ -155,7 +156,8 @@ void server(WDigraph graph)
             }
             string temp; 
             temp = "N " + to_string(path.size()) + "\n";
-            cerr << "Server: " << temp;
+            cout << "Points have been selected"<<endl;
+            cout<< "Number of waypoints: "<<temp;
             Serial.writeline(temp);
             int count = path.size();
             clock_t timer = clock();
@@ -165,29 +167,26 @@ void server(WDigraph graph)
             {
                 string line ="";
                 line = Serial.readline(1000);
-                if(line[0] =='R'){
-                    cerr << "R recieved"<< endl;
-                    continue;
-                }
+                
                 if(line == "A\n" && count != 0)
                 {
                     timer = clock();
                     int key = path.front();
                     path.pop_front();
-                    // cerr << key << endl;
+                   
                     Point p = points[key];
                     temp = "W "+ to_string(p.lat);
                     temp = temp + " ";
                     temp = temp + to_string(p.lon);
                     temp = temp + "\n";
                     while(!Serial.writeline(temp));
-                    // cerr << key << endl;
+                    
                     count --;
                 }
                 if(count == 0)
                 {
                     line = Serial.readline(1000);
-                    // cerr <<"WE SHOULD HAVE SENT E" << endl;
+                    
                     if(line[0] == 'A'){
                         line = Serial.readline(1000);
                         Serial.writeline("E\n");
@@ -195,6 +194,7 @@ void server(WDigraph graph)
                         line = Serial.readline(1000);
                         cerr << line;
                         cout << "Data has been sent!" << endl;
+                        cout<<"---------------------------------"<<endl;
                         break;
                     }else{
                         cerr << line << " Was recieved: Restarting"<< endl;
