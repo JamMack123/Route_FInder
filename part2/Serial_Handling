@@ -15,26 +15,31 @@ extern shared_vars shared;
   Inputs: int timeout
   Outputs: string (either empty or full)
 */
-String readData(int timeout){
-  // Initialization of variables
-  String line = "";
-  unsigned long time = millis();
+String readData(int timeout)
+{
+    // Initialization of variables
+    String line = "";
+    unsigned long time = millis();
 
-  while(true){
-    // Timeout case
-    if(millis() - time >= timeout){
-      return "";
+    while(true)
+    {
+        // Timeout case
+        if(millis() - time >= timeout)
+        {
+            return "";
+        }
+        // If there is data to be read in it will be added to the line variable
+        if(Serial.available() != 0)
+        {
+            char data = Serial.read();
+            line = line + data;
+            // Once we reach a newline char we can exit
+            if(data == '\n' || line.length() >= 200)
+            {
+                return line;
+            }
+        }
     }
-    // If there is data to be read in it will be added to the line variable
-    if(Serial.available() != 0){
-      char data = Serial.read();
-      line = line+data;
-      // Once we reach a newline char we can exit
-      if(data == '\n' || line.length() >= 200){
-        return line;
-      }
-    }
-  } 
 }
 
 /*
@@ -43,58 +48,66 @@ String readData(int timeout){
   Inputs: const lon_lat_32& start, const lon_lat_32& end
   Output: uint8_t (either a 1 if successful or 0 if not successful)
 */
-uint8_t get_waypoints(const lon_lat_32& start, const lon_lat_32& end) {
-  // Conversion of input to strings
-  String startLon = String(start.lon);
-  String startLat = String(start.lat);
-  String endLon = String(end.lon);
-  String endLat = String(end.lat);
-  
-  // Concatenating the variables together and sending it to the server
-  String stringTogether = "R " + startLat + " " + startLon + " " + endLat + " " + endLon + "\n";
-  Serial.print(stringTogether);
-  Serial.flush();
+uint8_t get_waypoints(const lon_lat_32 &start, const lon_lat_32 &end)
+{
+    // Conversion of input to strings
+    String startLon = String(start.lon);
+    String startLat = String(start.lat);
+    String endLon = String(end.lon);
+    String endLat = String(end.lat);
 
-  int numCommands;
-  delay(1000);
-  String commandLine = readData(10000);
-  
-  // Case checking if the input is in the form N #ofwaypoints
-  if(commandLine[0] == 'N'){
-    // Converting the # of waypoints
-    numCommands = commandLine.substring(2).toInt();
-    // Case where there are no waypoints
-    if(numCommands == 0){
-      shared.num_waypoints = 0;
-      return 1;
-    }
-    //Sending acknowledgement
-    Serial.print("A\n");
+    // Concatenating the variables together and sending it to the server
+    String stringTogether = "R " + startLat + " " + startLon + " " + endLat + " " + endLon + "\n";
+    Serial.print(stringTogether);
     Serial.flush();
-    shared.num_waypoints = numCommands;
-    int i = 0;
-    // Continuously reading in waypoints and saving the data until we reach the E char
-    while(true){
-      commandLine = readData(1000);
-      if(commandLine[0] == 'W'){
-        long long index = commandLine.indexOf(" ", 2);
-        long long lat = (commandLine.substring(2, index)).toInt();
-        long long lon = (commandLine.substring(index+1)).toInt();
-        shared.waypoints[i].lon = lon;
-        shared.waypoints[i].lat = lat;
-        i++;
+
+    int numCommands;
+    delay(1000);
+    String commandLine = readData(10000);
+
+    // Case checking if the input is in the form N #ofwaypoints
+    if(commandLine[0] == 'N')
+    {
+        // Converting the # of waypoints
+        numCommands = commandLine.substring(2).toInt();
+        // Case where there are no waypoints
+        if(numCommands == 0)
+        {
+            shared.num_waypoints = 0;
+            return 1;
+        }
+        //Sending acknowledgement
         Serial.print("A\n");
         Serial.flush();
-      }else if(commandLine[0] == 'E'){
-        break;
-      }
+        shared.num_waypoints = numCommands;
+        int i = 0;
+        // Continuously reading in waypoints and saving the data until we reach the E char
+        while(true)
+        {
+            commandLine = readData(1000);
+            if(commandLine[0] == 'W')
+            {
+                long long index = commandLine.indexOf(" ", 2);
+                long long lat = (commandLine.substring(2, index)).toInt();
+                long long lon = (commandLine.substring(index + 1)).toInt();
+                shared.waypoints[i].lon = lon;
+                shared.waypoints[i].lat = lat;
+                i++;
+                Serial.print("A\n");
+                Serial.flush();
+            }
+            else if(commandLine[0] == 'E')
+            {
+                break;
+            }
+        }
+        return 1;
     }
-    return 1;
-  }
-  // Clearing out the buffer
-  delay(10000);
-  while(Serial.available() > 0){
-    Serial.read();
-  }
-  return 0;
+    // Clearing out the buffer
+    delay(10000);
+    while(Serial.available() > 0)
+    {
+        Serial.read();
+    }
+    return 0;
 }
