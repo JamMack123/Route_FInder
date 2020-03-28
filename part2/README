@@ -1,0 +1,62 @@
+Name: Justn MacKenzie, Paige Lekach
+ID #: 1572034 , 1573266
+CMPUT 275 
+WINTER 2020
+
+Assignment 2 Part 2
+
+Included Files:
+	Client folder files
+	-client.cpp
+	-consts_and_types.h
+	-draw_route.cpp/.h
+	-lcd_image.cpp/.h
+	-map_drawing.cpp/.h
+	-serial_handling.cpp/.h
+	-Makefile
+
+	Server folder files
+	-server.cpp
+	-digraph.cpp/.h
+	-dijksta.cpp/.h
+	-edmotonroads-2.0.1.txt
+	-heap.h
+	-Makefile
+	-serialport.cpp/.h
+	-wdigraph.h
+
+	-README
+	
+Accessories:
+	- 1 Arduino Mega Board
+	- 1 Bread board
+	- TFT Display Screen and stylus
+	- 1 SD Card
+	- 1 USB Cable
+	- 1 Joystick
+	- 2 Push buttons
+	- Male to Female cords
+	- Male to Male cords
+
+Wiring Instructions:
+	-Due to the tft displays nature of connecting to the arduino, we will be assuming the user has this part connected properly. As the display just sits ontop of the arduino.
+	-The joystick is slightly more complex so heres how it is wired JS will annotate the joystick connection side while A will annotate the arduino connection side
+		- JS ground --> A ground
+		- JS 5V --> A 5V
+		- JS VRx --> A analog pin 9
+		- JS VRy --> A analog pin 8
+		- JS sw --> A digital pin 53
+	- Wire two push buttons by connecting one side to power and the other to either the pin 45 or 47.
+
+Running instructions:
+	-To run open two seperate terminals. In one go to the directory for the client side and type make upload if your arduino is correctly wired. 
+	-In the other terminal go to the directory where your server file is and type make. after the files compile you can then type ./server to run the file. Make sure before you run the server (i.e. ./server) your client side has successfully uploaded to the arduino.
+	- After these steps your arduino should have the program uploaded on it and your tft display screen should be able to select two points with the joystick.
+
+
+Notes and Assumptions
+	- We used the templates on eclass that were provided for the client.cpp file and the other needed files
+	- The only chages were made to serial_handling.cpp, draw_route.cpp, and server.cpp
+	- The basis or server.cpp was taken from our Assignment 2 Part 1 solution.
+	- Our program can only process less than 500 waypoints otherwise the shared variable cannot support it
+
